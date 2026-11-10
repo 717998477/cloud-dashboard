@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>云手机 · 独立控制台</title>
+  <link rel="stylesheet" href="/styles.css?v=list14" />
+</head>
+<body>
+  <div id="toastBox" class="toast-box"></div>
+
+  <!-- Auth View -->
+  <div id="authView" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title" id="authTitle">账号登录</h2>
+      </div>
+      <form id="authForm">
+        <div class="form-group">
+          <label>平台用户名</label>
+          <input id="authUsername" class="input" type="text" placeholder="输入用户名" required autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label>登录密码</label>
+          <input id="authPassword" class="input" type="password" placeholder="输入密码" required autocomplete="current-password" />
+        </div>
+        <div style="display:flex;gap:10px;margin-top:20px;">
+          <button id="authSubmitBtn" class="btn btn-primary" style="flex:1;" type="submit">进入控制中心</button>
+          <button id="authToggleBtn" class="btn btn-secondary" type="button">切换注册</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main App Shell -->
+  <div id="dashboardView" class="app-container hidden">
+    <!-- Top Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="brand-icon">CP</div>
+        <div class="brand-text">
+          <h1>移动云手机控制中心</h1>
+          <p id="currentUserText">精简列表 · 长期保活</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="addAccountBtn" class="btn btn-primary btn-sm">+ 绑定移动账号</button>
+        <button id="adminBtn" class="btn btn-secondary btn-sm hidden">用户配额</button>
+        <button id="refreshBtn" class="btn btn-secondary btn-sm btn-icon" title="刷新状态">↻</button>
+        <button id="logoutBtn" class="btn btn-danger btn-sm">退出</button>
+      </div>
+    </header>
+
+    <!-- KPI Overview -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-title">已绑移动账号</span>
+        <span class="kpi-value" id="kpiAccounts">0</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">托管云手机</span>
+        <span class="kpi-value" id="kpiDevices">0</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">长连接保活中</span>
+        <span class="kpi-value" id="kpiKeeping" style="color:var(--emerald);">0</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">累计心跳</span>
+        <span class="kpi-value" id="kpiHeartbeats" style="color:var(--cyan);">0</span>
+      </div>
+    </section>
+
+    <!-- Accounts -->
+    <div class="section-header">
+      <span class="section-title">官方移动账号</span>
+    </div>
+    <div id="accountList" class="account-list"></div>
+
+    <!-- Inline Keepalive Settings Panel -->
+    <section id="keepaliveSettingsPanel" class="settings-panel hidden">
+      <div class="settings-header">
+        <div>
+          <h3>保活设置</h3>
+          <p id="keepaliveSettingsName" style="color:var(--text-secondary);font-size:12px;margin-top:2px;"></p>
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+          <input id="keepaliveEnabledInput" type="checkbox" checked /> 启用后台保活
+        </label>
+      </div>
+      <form id="keepaliveSettingsForm">
+        <div class="form-group">
+          <label>保活策略</label>
+          <select id="keepaliveModeSelect" class="select">
+            <option value="continuous">持续连接 · 官方断线自动续接</option>
+            <option value="cycle">定时循环 · 等待后按需连接</option>
+          </select>
+        </div>
+        <div id="keepaliveCycleFields" class="hidden" style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div class="form-group" style="flex:1;min-width:140px;">
+            <label>等待间隔（分钟）</label>
+            <input id="keepaliveWaitInput" class="input" type="number" min="1" max="10080" value="5" />
+            <small>等待结束后自动建立连接</small>
+          </div>
+          <div class="form-group" style="flex:1;min-width:140px;">
+            <label>连接时长（分钟）</label>
+            <input id="keepaliveDurationInput" class="input" type="number" min="1" max="10080" value="5" />
+            <small>时间到达后断开连接进入下轮等待</small>
+          </div>
+        </div>
+        <div id="keepaliveSchedulePreview" class="preview-box"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;">
+          <button id="keepaliveCancelBtn" class="btn btn-secondary btn-sm" type="button">取消</button>
+          <button id="keepaliveSaveBtn" class="btn btn-primary btn-sm" type="submit">保存设置</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Devices Grid -->
+    <div class="section-header">
+      <span class="section-title">云手机实例</span>
+    </div>
+    <div id="deviceGrid" class="device-grid"></div>
+
+    <!-- Logs List -->
+    <div class="section-header">
+      <span class="section-title">实时运行日志</span>
+    </div>
+    <div class="settings-panel" style="padding:12px 16px;">
+      <div id="logsContainer" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;font-family:var(--font-mono);font-size:11px;"></div>
+    </div>
+  </div>
+
+  <!-- Bind Account Modal -->
+  <div id="bindModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">绑定官方移动云手机</h2>
+        <button id="closeBindBtn" class="close-btn" type="button">&times;</button>
+      </div>
+
+      <div style="display:flex;gap:6px;margin-bottom:16px;">
+        <button class="btn btn-secondary btn-sm bind-tab active" data-mode="sms" style="flex:1;" type="button">验证码登录</button>
+        <button class="btn btn-secondary btn-sm bind-tab" data-mode="pwd" style="flex:1;" type="button">密码登录</button>
+      </div>
+
+      <!-- SMS Login Form -->
+      <div id="bindSmsBox">
+        <div class="form-group">
+          <label>中国移动手机号</label>
+          <input id="bindMobile" class="input" type="tel" maxlength="11" placeholder="输入 11 位手机号" />
+        </div>
+
+        <!-- Slider Puzzle -->
+        <div id="sliderBox" class="captcha-box hidden">
+          <div style="width:300px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:11px;color:var(--text-tertiary);">拖动滑块完成安全验证</span>
+            <button id="reloadCaptchaBtn" class="btn btn-secondary btn-sm" style="padding:2px 6px;" type="button">换一张</button>
+          </div>
+          <div class="captcha-stage">
+            <img id="puzzleBg" class="captcha-bg" alt="" />
+            <img id="puzzleJigsaw" class="captcha-jigsaw" alt="" />
+          </div>
+          <div id="sliderTrack" class="captcha-track">
+            <div id="sliderFill" class="captcha-fill"></div>
+            <span id="sliderHint" style="font-size:11px;color:var(--text-tertiary);z-index:1;">按住滑块向右拖动</span>
+            <div id="sliderHandle" class="captcha-handle">&rarr;</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>短信验证码</label>
+          <div style="display:flex;gap:8px;">
+            <input id="bindSmsCode" class="input" type="text" maxlength="6" placeholder="6 位验证码" />
+            <button id="getSmsBtn" class="btn btn-secondary" style="width:110px;" type="button">获取验证码</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>账号备注（选填）</label>
+          <input id="bindRemark" class="input" type="text" placeholder="例如：挂机 1 号" />
+        </div>
+        <button id="submitSmsBtn" class="btn btn-primary" style="width:100%;margin-top:10px;" type="button">验证并绑定</button>
+      </div>
+
+      <!-- Password Login Form -->
+      <div id="bindPwdBox" class="hidden">
+        <div class="form-group">
+          <label>手机号</label>
+          <input id="pwdMobile" class="input" type="tel" maxlength="11" placeholder="手机号" />
+        </div>
+        <div class="form-group">
+          <label>移动云手机密码</label>
+          <input id="pwdPassword" class="input" type="password" placeholder="密码" />
+        </div>
+        <div class="form-group">
+          <label>备注</label>
+          <input id="pwdRemark" class="input" type="text" placeholder="例如：主账号" />
+        </div>
+        <button id="submitPwdBtn" class="btn btn-primary" style="width:100%;margin-top:10px;" type="button">登录并同步</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Modal -->
+  <div id="adminModal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width:560px;">
+      <div class="modal-header">
+        <h2 class="modal-title">租户与配额管理</h2>
+        <button id="closeAdminBtn" class="close-btn" type="button">&times;</button>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div style="display:flex;gap:8px;">
+          <input id="newAdminUser" class="input" placeholder="用户名" />
+          <input id="newAdminPass" class="input" type="password" placeholder="密码" />
+          <input id="newAdminQuota" class="input" style="width:80px;" type="number" value="10" placeholder="配额" />
+          <button id="createAdminUserBtn" class="btn btn-primary btn-sm" type="button">新增</button>
+        </div>
+      </div>
+      <div style="max-height:280px;overflow-y:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border-default);text-align:left;color:var(--text-tertiary);">
+              <th style="padding:6px;">用户</th>
+              <th style="padding:6px;">角色</th>
+              <th style="padding:6px;">账号数/上限</th>
+              <th style="padding:6px;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="adminUsersTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Responsive Remote Viewer -->
+  <div id="viewerModal" class="viewer-modal hidden">
+    <!-- Top Floating Toolbar -->
+    <div class="viewer-header">
+      <div class="viewer-header-left">
+        <span class="viewer-phone-name" id="viewerPhoneName">云手机</span>
+        <span class="badge badge-success" id="viewerRtt" style="font-family:var(--font-mono);">-- ms</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button id="viewerMuteBtn" class="btn btn-secondary btn-sm" type="button">静音</button>
+        <button id="viewerReconnectBtn" class="btn btn-secondary btn-sm" type="button">重连</button>
+        <button id="viewerCloseBtn" class="btn btn-danger btn-sm" type="button">退出</button>
+      </div>
+    </div>
+
+    <!-- Video Stage -->
+    <div class="viewer-body">
+      <div id="player" class="viewer-player-wrap"></div>
+      <div id="viewerOverlay" class="viewer-overlay-status">
+        <div id="viewerStatusText">正在建立媒体连接…</div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation Bar (Home, Back, Task) -->
+    <div class="viewer-nav">
+      <button id="navTaskBtn" class="viewer-nav-btn" type="button">多任务</button>
+      <button id="navHomeBtn" class="viewer-nav-btn" type="button">主页</button>
+      <button id="navBackBtn" class="viewer-nav-btn" type="button">返回</button>
+    </div>
+  </div>
+
+  <script src="/vendor/cloudphone-client.js"></script>
+  <script src="/vendor/tcloud-player.js?v=9"></script>
+  <script src="/app.js?v=list14"></script>
+</body>
+</html>

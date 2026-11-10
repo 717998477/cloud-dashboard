@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>云电脑统一控制台</title>
+<style>
+  :root {
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --text: #1b2530;
+    --muted: #6b7a8c;
+    --line: #e3e8ee;
+    --ok: #12a05c;
+    --bad: #d1495b;
+    --accent: #1671c4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(1200px 600px at 20% -10%, #e7f1fb 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 18px;
+  }
+  .wrap { width: 100%; max-width: 880px; }
+  header { margin-bottom: 22px; }
+  h1 { font-size: 22px; margin: 0 0 6px; letter-spacing: .5px; }
+  header p { margin: 0; color: var(--muted); font-size: 13.5px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px 20px 18px;
+    box-shadow: 0 8px 24px rgba(20, 40, 60, .06);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(20, 40, 60, .1); }
+  .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .title { display: flex; align-items: center; gap: 10px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: #c3ccd6; flex: none; }
+  .dot.on { background: var(--ok); box-shadow: 0 0 0 3px rgba(18, 160, 92, .14); }
+  .dot.off { background: var(--bad); box-shadow: 0 0 0 3px rgba(209, 73, 91, .14); }
+  .name { font-size: 16px; font-weight: 600; }
+  .desc { color: var(--muted); font-size: 12.5px; line-height: 1.7; margin: 0; }
+  .meta { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag {
+    font-size: 12px; color: #44566b; background: #f0f3f7;
+    border: 1px solid var(--line); border-radius: 999px; padding: 3px 9px;
+  }
+  .open {
+    margin-top: auto;
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 40px; border-radius: 10px;
+    background: var(--accent); color: #fff; text-decoration: none;
+    font-size: 14px; font-weight: 600; letter-spacing: .5px;
+  }
+  .open:hover { background: #125ba0; }
+  .status { font-size: 12px; color: var(--muted); }
+  footer { margin-top: 20px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+  footer b { color: #44566b; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>云电脑统一控制台</h1>
+    <p>一个容器同时运行两套保活面板，数据各自独立存放，互不影响。</p>
+  </header>
+
+  <div class="grid">
+    <section class="card" data-app="ctyun">
+      <div class="top">
+        <div class="title"><span class="dot"></span><span class="name">天翼云 / 移动云电脑</span></div>
+        <span class="status" data-status>检测中…</span>
+      </div>
+      <p class="desc">天翼云电脑签到保活、移动云（爱家 / 公众版）保活、官方任务自动化、积分兑换、Web 远程桌面。</p>
+      <div class="meta">
+        <span class="tag" data-port>端口 8566</span>
+        <span class="tag">多账号</span>
+        <span class="tag">零无头浏览器</span>
+      </div>
+      <a class="open" data-link href="#">打开控制台</a>
+    </section>
+
+    <section class="card" data-app="cmcc">
+      <div class="top">
+        <div class="title"><span class="dot"></span><span class="name">中国移动云手机</span></div>
+        <span class="status" data-status>检测中…</span>
+      </div>
+      <p class="desc">移动云手机多用户隔离保活、原生长连接守护、WebRTC 实时画面显示与触控、短信验证码登录。</p>
+      <div class="meta">
+        <span class="tag" data-port>端口 8577</span>
+        <span class="tag">多租户</span>
+        <span class="tag">WebRTC 直显</span>
+      </div>
+      <a class="open" data-link href="#">打开控制台</a>
+    </section>
+  </div>
+
+  <footer>
+    <div>首次使用：天翼云面板默认账号 <b>admin</b> / <b>admin123</b>（登录后请立刻改密）；移动云手机面板 <b>第一个注册的账号即管理员</b>。</div>
+    <div>两套面板的账号不互通，各自登录一次即可；本入口页仅做跳转，不参与任何登录。</div>
+  </footer>
+</div>
+
+<script>
+  var host = location.hostname || '127.0.0.1';
+  // 端口由服务端 /health 下发，改端口时不用动这里
+  var FALLBACK = { ctyun: 8566, cmcc: 8577 };
+
+  function bindLinks(apps) {
+    document.querySelectorAll('.card').forEach(function (card) {
+      var app = card.getAttribute('data-app');
+      var item = apps.find(function (a) { return a.name === app; });
+      var port = (item && item.port) || FALLBACK[app];
+      card.querySelector('[data-link]').href = 'http://' + host + ':' + port + '/';
+      var tag = card.querySelector('[data-port]');
+      if (tag) tag.textContent = '端口 ' + port;
+    });
+  }
+
+  function render(apps) {
+    bindLinks(apps);
+    apps.forEach(function (item) {
+      var card = document.querySelector('.card[data-app="' + item.name + '"]');
+      if (!card) return;
+      var dot = card.querySelector('.dot');
+      var status = card.querySelector('[data-status]');
+      dot.classList.add(item.up ? 'on' : 'off');
+      status.textContent = item.up ? '运行中' : '未响应';
+      status.style.color = item.up ? 'var(--ok)' : 'var(--bad)';
+    });
+  }
+
+  function poll() {
+    fetch('/health', { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) { render(data.apps || []); })
+      .catch(function () {});
+  }
+  poll();
+  setInterval(poll, 8000);
+</script>
+</body>
+</html>

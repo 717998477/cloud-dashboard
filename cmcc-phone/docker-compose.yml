@@ -1,0 +1,13 @@
+services:
+  cmcc-cloudphone-manager:
+    build: .
+    container_name: cmcc-cloudphone-manager
+    restart: unless-stopped
+    ports:
+      - "8680:8680"
+    environment:
+      - TZ=Asia/Shanghai
+      - PORT=8680
+      - DATA_DIR=/app/data
+    volumes:
+      - ./data:/app/data

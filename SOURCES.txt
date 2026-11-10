@@ -1,0 +1,2 @@
+ctyun-dashboard  https://github.com/muyicn/ctyun-dashboard  @ 827a07d770c7e39b277787c62557ec18a15c645e
+cmcc-phone       https://github.com/maoaceo/cmcc-phone       @ e7f85ded797d0f51dd820a0998937fd15119bec2

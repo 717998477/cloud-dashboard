@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#0a0e14" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230a6cff'/%3E%3Crect x='7.6' y='4.2' width='8.8' height='15.6' rx='2' fill='none' stroke='white' stroke-width='1.7'/%3E%3C/svg%3E" />
+  <title>云手机控制</title>
+  <link rel="stylesheet" href="/viewer.css?v=2026b" />
+</head>
+<body>
+  <div id="toastWrap" class="toast-wrap"></div>
+
+  <header class="v-top">
+    <button id="vClose" class="v-icon-btn" type="button" title="退出控制" aria-label="退出控制">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="v-title">
+      <span id="vName">云手机</span>
+      <span id="vRtt" class="v-rtt">-- ms</span>
+    </div>
+    <div class="v-tools">
+      <select id="vQuality" class="v-select hidden" title="画质">
+        <option value="2" selected>高清 1080P</option>
+        <option value="1">流畅 720P</option>
+        <option value="3">超清 2K</option>
+        <option value="0">自动画质</option>
+      </select>
+      <button id="vMute" class="v-btn" type="button">静音中</button>
+      <button id="vReconnect" class="v-btn" type="button">重连</button>
+    </div>
+  </header>
+
+  <main class="v-stage">
+    <div id="player" class="v-mount"></div>
+    <div id="vOverlay" class="v-overlay">
+      <div class="v-spinner"></div>
+      <div id="vStatus" class="v-status">正在建立连接…</div>
+      <a id="vHomeLink" class="v-home-link hidden" href="/">返回工作台登录</a>
+    </div>
+  </main>
+
+  <footer class="v-dock">
+    <div class="v-textrow">
+      <input id="vText" class="v-input" type="text" placeholder="输入文字，发送到云手机…" autocomplete="off" />
+      <button id="vSendText" class="v-send" type="button">发送</button>
+    </div>
+    <div class="v-navrow">
+      <button id="navTask" class="v-nav" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></svg>
+        <span>多任务</span>
+      </button>
+      <button id="navHome" class="v-nav" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.2"/></svg>
+        <span>主页</span>
+      </button>
+      <button id="navBack" class="v-nav" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg>
+        <span>返回</span>
+      </button>
+    </div>
+  </footer>
+
+  <script src="/vendor/cloudphone-client.js"></script>
+  <script src="/vendor/tcloud-player.js?v=8"></script>
+  <script src="/viewer.js?v=2026a"></script>
+</body>
+</html>

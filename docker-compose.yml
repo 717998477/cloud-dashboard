@@ -1,0 +1,32 @@
+services:
+  cloud-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cloud-dashboard:multi
+    container_name: cloud-dashboard
+    restart: unless-stopped
+    ports:
+      # 统一入口页（两个面板的跳转 + 聚合健康检查）
+      - "8555:8555"
+      # 天翼云 / 移动云电脑面板
+      - "8566:8566"
+      # 中国移动云手机面板
+      - "8577:8577"
+    environment:
+      - TZ=Asia/Shanghai
+      - DATA_ROOT=/data
+      # 要改端口就改上面的映射，并同步下面三行
+      # - PORTAL_PORT=8555
+      # - CTYUN_PORT=8566
+      # - CMCC_PORT=8577
+    volumes:
+      # 两个面板的数据都落在这里，务必持久化
+      - ./data:/data
+    mem_limit: 768m
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:8555/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s

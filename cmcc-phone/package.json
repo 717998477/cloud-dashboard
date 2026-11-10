@@ -1,0 +1,13 @@
+{
+  "name": "cmcc-cloudphone-manager",
+  "version": "1.0.0",
+  "description": "中国移动云手机多用户隔离长期保活与 Web 实时显示控制系统",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
