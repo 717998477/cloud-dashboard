@@ -1,9 +1,6 @@
 services:
   cloud-dashboard:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: cloud-dashboard:multi
+    image: ghcr.io/717998477/cloud-dashboard:latest
     container_name: cloud-dashboard
     restart: unless-stopped
     ports:
